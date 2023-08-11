@@ -4,7 +4,8 @@
 - NVIDIA-SMI 535.86.05              Driver Version: 535.86.05    CUDA Version: 12.2
   
 - add example to Isaac Example with Workstation Installation setting
-  * dclaw mjcf -> usd file (dynamics is not well implemented!)
+  > dclaw mjcf -> usd file (dynamics is not well implemented!)
+<img src="/dclaw_isaacsim.png"  width="700" height="370">
 
   
   
