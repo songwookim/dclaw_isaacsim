@@ -1,0 +1,81 @@
+from omni.isaac.examples.base_sample import BaseSample
+from omni.isaac.franka.tasks import PickPlace
+from omni.isaac.franka.controllers import PickPlaceController
+import omni.kit.commands
+from pxr import UsdLux, Sdf, Gf, UsdPhysics, PhysicsSchemaTools
+from omni.isaac.examples.base_sample import BaseSample
+from omni.isaac.core.utils.nucleus import get_assets_root_path
+from omni.isaac.core.utils.stage import add_reference_to_stage
+from omni.isaac.core.robots import Robot
+
+import carb
+
+class HelloWorld(BaseSample):
+    def __init__(self) -> None:
+        super().__init__()
+        return
+
+    def setup_scene(self):
+        world = self.get_world()
+        world.scene.add_default_ground_plane() 
+        # We add the task to the world here
+        # world.add_task(PickPlace(name="awesome_task"))
+
+        return
+
+    async def setup_post_load(self):
+        self._world = self.get_world()
+        # setting up import configuration:
+        status, import_config = omni.kit.commands.execute("MJCFCreateImportConfig")
+        import_config.set_fix_base(False)
+        import_config.set_make_default_prim(False)
+
+        # Get path to extension data:
+        ext_manager = omni.kit.app.get_app().get_extension_manager()
+        ext_id = ext_manager.get_enabled_extension_id("omni.isaac.mjcf")
+        extension_path = ext_manager.get_extension_path(ext_id)
+
+        # import MJCF
+        omni.kit.commands.execute(
+            "MJCFCreateAsset",
+            mjcf_path=extension_path + "/data/mjcf/nv_ant.xml",
+            import_config=import_config,
+            prim_path="/dclaw"
+        )
+        
+        #py stdout
+        print("Num of degrees of freedom before first reset: ") # prints None
+        # add_reference_to_stage(usd_path=asset_path, prim_path="/World/Fancy_Robot")
+        jetbot_robot = self._world.scene.add(Robot(prim_path="/dclaw", name="dclaw"))
+        print("Num of degrees of freedom before first reset: " + str(jetbot_robot.get_dof_index())) # prints None
+
+        
+        # self._cube = self._world.scene.get_object("dclaw")
+        # position, orientation = self._cube.get_world_pose()
+
+
+        # # get stage handle
+        # stage = omni.usd.get_context().get_stage()
+        
+        # # enable physics
+        # scene = UsdPhysics.Scene.Define(stage, Sdf.Path("/physicsScene"))
+
+        # # set gravity
+        # scene.CreateGravityDirectionAttr().Set(Gf.Vec3f(0.0, 0.0, -1.0))
+        # scene.CreateGravityMagnitudeAttr().Set(9.81)
+
+        # # add lighting
+        # distantLight = UsdLux.DistantLight.Define(stage, Sdf.Path("/DistantLight"))
+        # distantLight.CreateIntensityAttr(500)
+
+        # add ground plane
+        # omni.kit.commands.execute(
+        #     "AddGroundPlaneCommand",
+        #     stage=stage,
+        #     planePath="/groundPlane",
+        #     axis="Z",
+        #     size=1500.0,
+        #     position=Gf.Vec3f(0, 0, -50),
+        #     color=Gf.Vec3f(0.5),
+        # )
+        return
